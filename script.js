@@ -14,6 +14,7 @@ for (let i = 0; i < n; i++) {
         vx : randomVelocity(),
         vy : randomVelocity(),
         color : getRandomColor(),
+        collision: 0,
         mass : getMass(radiusValue),
     };
 }
@@ -70,6 +71,49 @@ function randomVelocity() {
         }
     } else return randomVelocity()
 }
+
+function circleCollide(i, j) {
+    dx = circles[i].x - circles[j].x;
+    dy = circles[i].y - circles[j].y;
+    collisionision_angle = Math.atan2(dy, dx);
+    magnitude_1 = Math.sqrt(circles[i].vx * circles[i].vx + circles[i].vy * circles[i].vy);
+    magnitude_2 = Math.sqrt(circles[j].vx * circles[j].vx + circles[j].vy * circles[j].vy);
+    direction_1 = Math.atan2(circles[i].vy, circles[i].vx);
+    direction_2 = Math.atan2(circles[j].vy, circles[j].vx);
+    new_vx_1 = magnitude_1 * Math.cos(direction_1 - collisionision_angle);
+    new_vy_1 = magnitude_1 * Math.sin(direction_1 - collisionision_angle);
+    new_vx_2 = magnitude_2 * Math.cos(direction_2 - collisionision_angle);
+    new_vy_2 = magnitude_2 * Math.sin(direction_2 - collisionision_angle);
+    final_vx_1 = ((circles[i].mass - circles[j].mass) * new_vx_1 + (circles[j].mass + circles[j].mass) * new_vx_2) / (circles[i].mass + circles[j].mass);
+    final_vx_2 = ((circles[i].mass + circles[i].mass) * new_vx_1 + (circles[j].mass - circles[i].mass) * new_vx_2) / (circles[i].mass + circles[j].mass);
+    final_vy_1 = new_vy_1;
+    final_vy_2 = new_vy_2;
+    circles[i].vx = Math.cos(collisionision_angle) * final_vx_1 + Math.cos(collisionision_angle + Math.PI / 2) * final_vy_1;
+    circles[i].vy = Math.sin(collisionision_angle) * final_vx_1 + Math.sin(collisionision_angle + Math.PI / 2) * final_vy_1;
+    circles[j].vx = Math.cos(collisionision_angle) * final_vx_2 + Math.cos(collisionision_angle + Math.PI / 2) * final_vy_2;
+    circles[j].vy = Math.sin(collisionision_angle) * final_vx_2 + Math.sin(collisionision_angle + Math.PI / 2) * final_vy_2;
+    circles[i].color = getRandomColor();
+    circles[j].color = getRandomColor();
+}
+
+function checkBallsCollide() {
+    for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+            distance_x = Math.abs(circles[i].x - circles[j].x);
+            distance_y = Math.abs(circles[i].y - circles[j].y);
+            distance = Math.sqrt(distance_x * distance_x + distance_y * distance_y);
+            if (distance <= (circles[i].radius + circles[j].radius) && circles[i].collision === 0 && circles[j].collision === 0) {
+                circleCollide(i, j);
+                circles[i].collision = 1;
+                circles[j].collision = 1;
+            } else if (distance > (circles[i].radius + circles[j].radius)) {
+                circles[i].collision = 0;
+                circles[j].collision = 0;
+            }
+        }
+    }
+}
+
 function moveCircles() {
     let pen = canvas.getContext('2d');
     pen.clearRect(0, 0, maxWidth, maxHeight);
@@ -80,34 +124,7 @@ function moveCircles() {
         if (circle.y > (maxHeight - circle.radius) || circle.y < circle.radius) {
             circle.vy = -1 * (circle.vy);
         }
-        for (let i=0; i<n;i++){
-            for (let j=i+1;j<n;j++){
-                if (Math.sqrt(Math.pow((circles[i].x-circles[j].x),2)
-                    + Math.pow((circles[i].y-circles[j].y),2)) <= circles[i].radius+circles[j].radius){
-                    dx = circles[i].x-circles[j].x;
-                    dy = circles[i].y-circles[j].y;
-                    collisionision_angle = Math.atan2(dy, dx);
-                    magnitude_1 = Math.sqrt(circles[i].vx*circles[i].vx+circles[i].vy*circles[i].vy);
-                    magnitude_2 = Math.sqrt(circles[j].vx*circles[j].vx+circles[j].vy*circles[j].vy);
-                    direction_1 = Math.atan2(circles[i].vy, circles[i].vx);
-                    direction_2 = Math.atan2(circles[j].vy, circles[j].vx);
-                    new_vx_1 = magnitude_1*Math.cos(direction_1-collisionision_angle);
-                    new_vy_1 = magnitude_1*Math.sin(direction_1-collisionision_angle);
-                    new_vx_2 = magnitude_2*Math.cos(direction_2-collisionision_angle);
-                    new_vy_2 = magnitude_2*Math.sin(direction_2-collisionision_angle);
-                    final_vx_1 = ((circles[i].mass-circles[j].mass)*new_vx_1+(circles[j].mass+circles[j].mass)*new_vx_2)/(circles[i].mass+circles[j].mass);
-                    final_vx_2 = ((circles[i].mass+circles[i].mass)*new_vx_1+(circles[j].mass-circles[i].mass)*new_vx_2)/(circles[i].mass+circles[j].mass);
-                    final_vy_1 = new_vy_1;
-                    final_vy_2 = new_vy_2;
-                    circles[i].vx = Math.cos(collisionision_angle)*final_vx_1+Math.cos(collisionision_angle+Math.PI/2)*final_vy_1;
-                    circles[i].vy = Math.sin(collisionision_angle)*final_vx_1+Math.sin(collisionision_angle+Math.PI/2)*final_vy_1;
-                    circles[j].vx = Math.cos(collisionision_angle)*final_vx_2+Math.cos(collisionision_angle+Math.PI/2)*final_vy_2;
-                    circles[j].vy = Math.sin(collisionision_angle)*final_vx_2+Math.sin(collisionision_angle+Math.PI/2)*final_vy_2;
-                    circles[i].color = getRandomColor();
-                    circles[j].color = getRandomColor();
-                }
-            }
-        }
+        setInterval(checkBallsCollide,1);
         pen.beginPath();
         pen.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
         pen.fillStyle = circle.color;
