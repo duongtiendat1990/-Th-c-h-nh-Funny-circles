@@ -72,8 +72,6 @@ function checkOverlappedCircles() {
         for (let j = n-1; j>0,j!==i;j--){
             var distance_x = Math.abs(circles[i].x - circles[j].x);
             var distance_y = Math.abs(circles[i].y - circles[j].y);
-            console.log('circles[i].x= ' + circles[i].x + ' ; circles[j].x= ' + circles[j].x + ' ; distance_x= ' + distance_x);
-            console.log('circles[i].y= ' + circles[i].y + ' ; circles[j].y= ' + circles[j].y + ' ; distance_y= ' + distance_y);
             var distance = Math.sqrt(distance_x * distance_x + distance_y * distance_y);
             if (distance <= (circles[i].radius + circles[j].radius)) {
                 circles[i].x = randomXCoordinate();
