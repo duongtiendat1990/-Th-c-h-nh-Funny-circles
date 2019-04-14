@@ -69,7 +69,7 @@ function randomVelocity() {
 
 function checkOverlappedCircles() {
     for (let i = 0; i<n; i++){
-        for (let j = n-1; j>0,j!==i;j--){
+        for (let j = n-1; j>=0,j!==i;j--){
             var distance_x = Math.abs(circles[i].x - circles[j].x);
             var distance_y = Math.abs(circles[i].y - circles[j].y);
             var distance = Math.sqrt(distance_x * distance_x + distance_y * distance_y);
@@ -107,7 +107,7 @@ function moveCircles() {
 
 function checkBallsCollide() {
     for (let i = 0; i < n; i++) {
-        for (let j = n-1; j>0,j!==i;j--) {
+        for (let j = n-1; j >=0,j!==i;j--) {
             distance_x = Math.abs(circles[i].x - circles[j].x);
             distance_y = Math.abs(circles[i].y - circles[j].y);
             distance = Math.sqrt(distance_x * distance_x + distance_y * distance_y);
